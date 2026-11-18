@@ -29,7 +29,7 @@ Planned: "already in your library" from the Koha database, Z39.50.
 ## Install
 
 1. Plugins must be enabled in `koha-conf.xml`: `<enable_plugins>1</enable_plugins>` (then restart Plack: `sudo koha-plack --restart <instance>`).
-2. Download `koha-plugin-marchelper-v<version>.kpz` from this repository's **Releases** page.
+2. Download `koha-plugin-marchelper-v<version>.kpz` from the [**Releases** page](https://github.com/amalendu-ls/koha-plugin-marc-helper/releases).
 3. *Administration → Plugins → Upload plugin*, choose the `.kpz`.
 4. *Actions → Configure*: enter your institution name and item type; change the cataloguing rules if your library works differently; save.
 5. Open *Cataloguing → New record*: the **MARC Helper** button is in the toolbar. Batch cataloguing is under *Tools → Tool plugins → Koha MARC Helper → Run tool*.
@@ -54,7 +54,7 @@ Koha's *Plugins* page can search GitHub for plugins, but only the accounts liste
 <plugin_repos>
     <repo>
         <name>Koha MARC Helper</name>
-        <org_name>YOUR-GITHUB-ACCOUNT</org_name>
+        <org_name>amalendu-ls</org_name>
         <service>github</service>
     </repo>
 </plugin_repos>
