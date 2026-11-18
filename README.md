@@ -1,3 +1,16 @@
+<div align="center">
+
+<img src="./banner.svg" width="100%" alt="Koha MARC Helper Plugin: copy cataloguing inside Koha with MARC 21 and AACR2" />
+
+<br /><br />
+
+<a href="https://github.com/amalendu-ls/koha-plugin-marc-helper/releases/latest"><img src="https://img.shields.io/github/v/release/amalendu-ls/koha-plugin-marc-helper?style=for-the-badge&label=Download%20.kpz&logo=github&logoColor=22d3ee&labelColor=0b1120&color=7B3FA0" alt="Download the latest .kpz" /></a>
+<img src="https://img.shields.io/badge/Koha-22.11%2B-7B3FA0?style=for-the-badge&labelColor=0b1120" alt="Koha 22.11 or later" />
+<a href="./LICENSE"><img src="https://img.shields.io/badge/Licence-GPL%20v3-22c55e?style=for-the-badge&labelColor=0b1120" alt="GPL v3" /></a>
+<a href="https://github.com/amalendu-ls/koha-marc-helper"><img src="https://img.shields.io/badge/Also%20a-browser%20extension-0b1120?style=for-the-badge&logo=googlechrome&logoColor=22d3ee" alt="Also available as a browser extension" /></a>
+
+</div>
+
 # Koha MARC Helper – Koha plugin
 
 Copy cataloguing inside Koha: on the **Add MARC record** page, a *MARC Helper* button opens a panel that searches library catalogues and open sources, builds a MARC 21 record following AACR2 and your local rules (nothing guessed), checks it, and fills the Koha form.
@@ -5,6 +18,17 @@ Copy cataloguing inside Koha: on the **Add MARC record** page, a *MARC Helper* b
 It is the Koha plugin form of the [Koha MARC Helper browser extension](https://chromewebstore.google.com/detail/hgiojehcfeaebkojkgpgiljdpncielcb) and shares its record-building code. Licence: **GNU GPL v3 or later** (see `LICENSE`).
 
 Plugin class `Koha::Plugin::MarcHelper`, version 1.0.0 (see `CHANGELOG.md`). Needs Koha 22.11 or later; tested on Koha 26.05.
+
+## Highlights
+
+| | |
+|---|---|
+| 🔎 **Search ~20 sources at once** | Library catalogues and open sources worldwide, each shown live as it answers |
+| 📝 **MARC 21 + AACR2 record builder** | Fields grouped 0XX–9XX with Koha's own subfield names; your local rules, nothing guessed |
+| ✅ **Check record & headings** | Validation of key fields, plus name and subject headings checked at LC and in your own authority file |
+| 🤖 **Optional AI Helper** | Suggestions for 082, 500, 650 and 246; off by default, nothing added unless you click |
+| 📚 **Batch cataloguing** | A list of ISBNs/ISSNs searched one by one, reviewed, then staged in Koha or downloaded |
+| 🔒 **Safe by design** | Approved sources only, keys encrypted on the server, nothing about patrons ever sent |
 
 ## What it does
 
@@ -132,6 +156,9 @@ Release: set `$VERSION` in `Koha/Plugin/MarcHelper.pm`, add the version to `CHAN
 
 On a Koha server: `prove -I. t/relay.t t/authorities.t t/stage.t`. Anywhere with Node: `node t/headings.test.js`.
 
-## Developer
+## Maintainer
 
-Amalendu Das. Copyright (C) 2026. GNU General Public License v3 or later.
+Built and maintained by **[Dr. Amalendu Das](https://github.com/amalendu-ls)**, Librarian, Nabadwip Vidyasagar College.
+[Portfolio](https://sites.google.com/nvc.ac.in/amalendudas/home_1) · [ORCID](https://orcid.org/0000-0003-0799-0599)
+
+Copyright (C) 2026 Amalendu Das. GNU General Public License v3 or later.
