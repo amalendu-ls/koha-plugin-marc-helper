@@ -728,7 +728,7 @@ window.MarcHelper = (function () {
       const simple = !h.text.includes('--');
       return el('div', {class: 'mh-hd-line mh-hd-warn'}, `↪ ${file}: not used – USE `,
         r.use.map((u, i) => [i ? ' or ' : '', el('b', {text: u}), simple && !u.includes('--')
-          ? [' ', small('Use', () => { writeHeadingForm(h.field, headingTextToSubfields(h.field.tag, u)); h.done = `LC form written: ${u}`; h.text = headingForm(h.field); renderRecord(); }, `Write "${u}"`)]
+          ? [' ', small('Use', () => { writeHeadingForm(h.field, headingTextToSubfields(h.field.tag, u), null, settings.ruleEndingPunctuation); h.done = `LC form written: ${u}`; h.text = headingForm(h.field); renderRecord(); }, `Write "${u}"`)]
           : null]));
     }
     if (r.status === 'mainOnly') {
@@ -753,7 +753,7 @@ window.MarcHelper = (function () {
         String(linked) === String(m.authid)
           ? el('span', {class: 'mh-pill mh-pill-same', text: 'linked ($9)'})
           : small(m.same ? 'Link' : 'Use', () => {
-            writeHeadingForm(h.field, m.subfields.map(([c, v]) => ({[c]: v})), m.authid);
+            writeHeadingForm(h.field, m.subfields.map(([c, v]) => ({[c]: v})), m.authid, settings.ruleEndingPunctuation);
             h.done = `Your library's form written and linked to authority ${m.authid} ($9).`;
             h.text = headingForm(h.field);
             renderRecord();

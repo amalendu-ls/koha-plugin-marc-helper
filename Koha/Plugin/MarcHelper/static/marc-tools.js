@@ -491,13 +491,19 @@ function headingPunctuate(tag, subfields) {
 /**
  * Write a form into the record's field: subfields [{a: …}, {d: …}] with punctuation; the
  * record's relators ($e, $4), $2, $3, $5, $8 are kept; old links ($0, $9) are replaced by
- * $9 = authid when given.
+ * $9 = authid when given. endingPunctuation is the library's rule (Settings › Cataloguing
+ * rules): "remove" takes the ending punctuation off each subfield as the record builder does
+ * (initials and abbreviations keep their full stop); "keep" (the default) writes AACR2's.
  */
-function writeHeadingForm(field, subfields, authid = null) {
+function writeHeadingForm(field, subfields, authid = null, endingPunctuation = 'keep') {
   const kept = (field.subfields || []).filter(sf => HEADING_KEEP_CODES.includes(Object.keys(sf)[0]));
   const relators = kept.filter(sf => ['e', '4'].includes(Object.keys(sf)[0]));
   const rest = kept.filter(sf => !['e', '4'].includes(Object.keys(sf)[0]));
-  field.subfields = [...headingPunctuate(field.tag, [...subfields, ...relators]), ...rest, ...(authid ? [{9: String(authid)}] : [])];
+  let written = headingPunctuate(field.tag, [...subfields, ...relators]);
+  if (endingPunctuation === 'remove' && typeof stripEndingPunctuation === 'function') {
+    written = written.map(sf => { const code = Object.keys(sf)[0]; return {[code]: stripEndingPunctuation(sf[code])}; });
+  }
+  field.subfields = [...written, ...rest, ...(authid ? [{9: String(authid)}] : [])];
   return field;
 }
 

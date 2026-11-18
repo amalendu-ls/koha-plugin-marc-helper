@@ -2,6 +2,10 @@
 
 Koha MARC Helper – Koha plugin (`Koha::Plugin::MarcHelper`). GNU GPL v3 or later.
 
+## 1.0.2 — 2026-11-18
+
+- **Check headings › Use and Link** follow the library's *ending punctuation* rule (Settings › Cataloguing rules). With *remove* (the default) the heading is written without ending full stops and commas, like the rest of the record (initials such as "H." keep theirs); with *keep* (ISBD) it gets AACR2 punctuation as before.
+
 ## 1.0.1 — 2026-11-18
 
 - **Login on the plugin's own pages:** when a session had run out and staff logged in again on *Batch cataloguing* or the settings page, the new login was lost (the page said the panel could not start, and asked for the login again). The pages now keep Koha's login cookie.

@@ -26,6 +26,11 @@ const panelCode = fs.readFileSync(path.join(STATIC, 'panel.js'), 'utf8');
 
 check('the panel uses the shared rules', ['headingForm(', 'headingLcScheme(', 'writeHeadingForm(', 'headingTextToSubfields(', 'headingWire'].every(f => panelCode.includes(f)));
 check('the panel has no copy of its own', !/function (punctuate|writeHeading|headingText)\(/.test(panelCode));
+check('Use and Link follow the library\'s ending-punctuation rule',
+  (panelCode.match(/writeHeadingForm\([^;]*settings\.ruleEndingPunctuation\)/g) || []).length === 2);
+const linked = field('650', '0', [{a: 'Computer programming'}]);
+sandbox.writeHeadingForm(linked, [{a: 'Computer programming'}], 1694, 'remove');
+check('rule "remove": the linked heading has no full stop', JSON.stringify(linked.subfields) === JSON.stringify([{a: 'Computer programming'}, {9: '1694'}]), JSON.stringify(linked.subfields));
 check('heading form', sandbox.headingForm(field('700', ' ', [{a: 'Yeats, W. B.'}, {q: '(William Butler),'}, {d: '1865-1939.'}])) === 'Yeats, W. B. (William Butler), 1865-1939');
 const name = field('100', ' ', [{a: 'Tagore, R.'}, {e: 'author.'}, {9: '17'}]);
 sandbox.writeHeadingForm(name, [{a: 'Tagore, Rabindranath'}, {d: '1861-1941'}], 2235);

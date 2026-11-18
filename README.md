@@ -17,7 +17,7 @@ Copy cataloguing inside Koha: on the **Add MARC record** page, a *MARC Helper* b
 
 It is the Koha plugin form of the [Koha MARC Helper browser extension](https://chromewebstore.google.com/detail/hgiojehcfeaebkojkgpgiljdpncielcb) and shares its record-building code. Licence: **GNU GPL v3 or later** (see `LICENSE`).
 
-Plugin class `Koha::Plugin::MarcHelper`, version 1.0.1 (see `CHANGELOG.md`). Needs Koha 22.11 or later; tested on Koha 26.05.
+Plugin class `Koha::Plugin::MarcHelper`, version 1.0.2 (see `CHANGELOG.md`). Needs Koha 22.11 or later; tested on Koha 26.05.
 
 ## Highlights
 

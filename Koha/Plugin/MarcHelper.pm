@@ -21,7 +21,7 @@ use C4::Context;
 use Mojo::JSON qw(decode_json encode_json);
 use URI;
 
-our $VERSION         = '1.0.1';
+our $VERSION         = '1.0.2';
 our $MINIMUM_VERSION = '22.11.00.000';
 
 our $metadata = {
