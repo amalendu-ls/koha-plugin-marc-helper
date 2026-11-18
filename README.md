@@ -141,6 +141,7 @@ Each search asks about 20 sources. With 6 or more Plack workers (`<plack_workers
 | `tools/build_kpz.py` | Builds the `.kpz` |
 | `.github/workflows/release.yml` | Builds and checks every push; a version tag (`v1.0.0`) publishes a release with the `.kpz` |
 | `CHANGELOG.md` | What changed in each version |
+| `CITATION.cff` | How to cite the plugin (GitHub shows it as *Cite this repository*) |
 | `t/relay.t` | Tests for the relay's safety rules |
 | `t/authorities.t` | Tests for the authority lookup (needs a Koha with authorities) |
 | `t/stage.t` | Tests for staging (needs a Koha; deletes its test batch again) |
