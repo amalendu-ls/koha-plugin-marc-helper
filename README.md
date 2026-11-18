@@ -33,6 +33,7 @@ Planned: "already in your library" from the Koha database, Z39.50.
 3. *Administration → Plugins → Upload plugin*, choose the `.kpz`.
 4. *Actions → Configure*: enter your institution name and item type; change the cataloguing rules if your library works differently; save.
 5. Open *Cataloguing → New record*: the **MARC Helper** button is in the toolbar. Batch cataloguing is under *Tools → Tool plugins → Koha MARC Helper → Run tool*.
+6. *Actions → Configure → About* shows a server check: whether keys are encrypted (Koha's `encryption_key`) and how many Plack workers this Koha runs (6 or more recommended, see [Plack workers](#plack-workers)). On *Sources*, *Test sources* shows that the Koha server can reach the book sources.
 
 To upgrade, upload the new `.kpz` the same way; settings and keys are kept.
 
@@ -58,6 +59,21 @@ Koha's *Plugins* page can search GitHub for plugins, but only the accounts liste
     </repo>
 </plugin_repos>
 ```
+
+## Privacy and data
+
+What leaves your Koha server, and where it goes. Nothing about patrons is ever sent, and the plugin has no tracking, statistics or accounts of its own.
+
+| When | What is sent | To |
+|---|---|---|
+| A search | The ISBN, ISSN or title words typed | The book sources (library catalogues and open sources listed below, and other libraries' Koha OPACs you add), from your Koha server |
+| Check headings | The record's name and subject headings | The Library of Congress (id.loc.gov); your own Koha authority file is searched inside Koha |
+| AI Helper (off unless you choose a provider) | The book's title, subtitle, author, publisher, year and summary | Only the AI provider chosen on the settings page, under its terms. With Ollama on your own server, nothing leaves your network |
+| Staging (batch cataloguing) | The reviewed records | Koha's own staging area; nothing is added to the catalogue until you import the batch |
+
+- **API keys** (book sources and AI provider) are kept on the Koha server, encrypted when Koha has an `encryption_key`; browsers only ever see placeholders.
+- **The batch queue** is kept in the browser of the staff computer where it was made (local storage), not on the server, until it is staged or cleared.
+- **Settings** apply to the whole Koha and are changed only by staff with *plugins: configure*.
 
 ## How it reaches the sources, and keeps keys safe
 
