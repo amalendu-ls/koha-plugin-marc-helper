@@ -1,0 +1,252 @@
+[%# Koha MARC Helper settings page. GPL v3 or later, see LICENSE. %]
+[% SET static = '/api/v1/contrib/marchelper/static/static/' %]
+[% INCLUDE 'doc-head-open.inc' %]
+<title>Koha MARC Helper: Settings &rsaquo; Plugins &rsaquo; Koha</title>
+[% INCLUDE 'doc-head-close.inc' %]
+<style>
+  /* Own styles, scoped to this page, so it looks the same on Koha 22.11 to 26.x */
+  #mhs { --g: #408540; --gd: #2f6a2f; --line: #d7ded8; --muted: #5d6b61; --warn: #8a5300; --bad: #b3261e;
+         max-width: 1000px; padding: 8px 16px 40px; color: #1f2a22; font-size: 14px; }
+  #mhs *, #mhs *::before, #mhs *::after { box-sizing: border-box; }
+  #mhs h1 { display: flex; align-items: center; gap: 10px; font-size: 24px; font-weight: 700; margin: 8px 0 4px; }
+  #mhs .logo { width: 34px; height: 34px; border-radius: 8px; background: var(--g); color: #fff; display: grid; place-items: center; font-size: 18px; }
+  #mhs .lead { color: var(--muted); margin: 0 0 4px; }
+  #mhs .tabs { display: flex; flex-wrap: wrap; gap: 4px; border-bottom: 1px solid var(--line); margin: 16px 0 0; }
+  #mhs .tabs button { border: 1px solid transparent; border-bottom: 0; background: none; padding: 8px 16px; border-radius: 6px 6px 0 0; cursor: pointer; font-weight: 600; color: var(--muted); }
+  #mhs .tabs button[aria-selected="true"] { background: #fff; border-color: var(--line); color: var(--g); margin-bottom: -1px; }
+  #mhs .panel { background: #fff; border: 1px solid var(--line); border-top: 0; border-radius: 0 0 8px 8px; padding: 20px 22px; display: grid; gap: 18px; }
+  #mhs .panel[hidden] { display: none; }
+  #mhs .row { display: grid; grid-template-columns: 250px minmax(0, 1fr); gap: 6px 20px; align-items: start; }
+  #mhs .row > label, #mhs .row > .label { font-weight: 600; padding-top: 7px; margin: 0; }
+  #mhs .row > .field { display: grid; gap: 6px; justify-items: start; }
+  #mhs .row input[type=text], #mhs .row input[type=password], #mhs .row select, #mhs .row textarea { width: 100%; max-width: 460px; border: 1px solid #b9c4bb; border-radius: 6px; padding: 7px 10px; font-size: 14px; }
+  #mhs .row textarea { font-family: Consolas, monospace; font-size: 13px; }
+  #mhs .help { color: var(--muted); font-size: 12.5px; }
+  #mhs .example { font: 12.5px Consolas, monospace; background: #f4f7f4; border: 1px dashed #c5d2c7; border-radius: 6px; padding: 6px 10px; max-width: 460px; width: 100%; white-space: pre-wrap; }
+  #mhs .ok { color: #1e7b34; } #mhs .warn { color: var(--warn); } #mhs .bad { color: var(--bad); }
+  #mhs .btn-g { background: var(--g); border: 1px solid var(--g); color: #fff; border-radius: 6px; padding: 7px 14px; font-weight: 600; cursor: pointer; }
+  #mhs .btn-g:hover { background: var(--gd); }
+  #mhs .btn-o { background: #fff; border: 1px solid #b9c4bb; border-radius: 6px; padding: 6px 12px; font-weight: 600; cursor: pointer; }
+  #mhs .btn-g:disabled, #mhs .btn-o:disabled { opacity: .55; cursor: default; }
+  #mhs .inline { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; width: 100%; }
+  #mhs .inline input[type=password] { flex: 1; min-width: 200px; }
+  #mhs .pill { display: inline-block; font-size: 11.5px; font-weight: 600; padding: 2px 9px; border-radius: 999px; white-space: nowrap; }
+  #mhs .pill-ok { background: #edf7ef; color: #1e7b34; } #mhs .pill-no { background: #f1f1f1; color: #666; }
+  #mhs .pill-warn { background: #fff4e0; color: var(--warn); } #mhs .pill-bad { background: #fdecea; color: var(--bad); }
+  #mhs table.src { width: 100%; border-collapse: collapse; }
+  #mhs table.src th, #mhs table.src td { padding: 8px; border-bottom: 1px solid #edf1ed; text-align: left; vertical-align: middle; }
+  #mhs table.src th { color: var(--muted); font-size: 12px; font-weight: 600; }
+  #mhs table.src tr.off td:not(:first-child):not(:nth-child(3)) { opacity: .5; }
+  #mhs .order { display: inline-flex; gap: 2px; }
+  #mhs .order button { border: 1px solid #c5cdc7; background: #fff; border-radius: 4px; width: 28px; height: 26px; cursor: pointer; }
+  #mhs .order button:disabled { opacity: .35; cursor: default; }
+  #mhs .switch { position: relative; width: 38px; height: 22px; display: inline-block; margin: 0; }
+  #mhs .switch input { opacity: 0; width: 0; height: 0; position: absolute; }
+  #mhs .switch span { position: absolute; inset: 0; background: #c9d1cb; border-radius: 999px; transition: .15s; cursor: pointer; }
+  #mhs .switch span::after { content: ""; position: absolute; width: 16px; height: 16px; left: 3px; top: 3px; background: #fff; border-radius: 50%; transition: .15s; }
+  #mhs .switch input:checked + span { background: var(--g); }
+  #mhs .switch input:checked + span::after { left: 19px; }
+  #mhs .switch input:focus-visible + span { outline: 3px solid #f2b705; }
+  #mhs .alert { padding: 10px 14px; border-radius: 6px; border: 1px solid; margin: 14px 0 0; }
+  #mhs .alert-ok { background: #edf7ef; border-color: #c4e3cb; color: #1e7b34; }
+  #mhs .alert-warn { background: #fff7e6; border-color: #f0d9a8; color: var(--warn); }
+  #mhs dl.about { display: grid; grid-template-columns: 180px 1fr; gap: 8px 16px; margin: 0; }
+  #mhs dl.about dt { color: var(--muted); font-weight: 400; }
+  #mhs dl.about dd { margin: 0; }
+  #mhs .actions { display: flex; gap: 12px; align-items: center; margin-top: 18px; }
+  #mhs :focus-visible { outline: 3px solid #f2b705; outline-offset: 1px; }
+  @media (max-width: 700px) { #mhs .row { grid-template-columns: 1fr; } #mhs .row > label { padding-top: 0; } #mhs dl.about { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body id="plugins_marchelper_configure" class="plugins">
+[% INCLUDE 'header.inc' %]
+[% INCLUDE 'cat-search.inc' %]
+
+<nav id="breadcrumbs" aria-label="Breadcrumb" class="breadcrumb">
+  <a href="/cgi-bin/koha/mainpage.pl">Home</a> &rsaquo;
+  <a href="/cgi-bin/koha/plugins/plugins-home.pl">Plugins</a> &rsaquo;
+  Koha MARC Helper &rsaquo; Settings
+</nav>
+
+<div class="main container-fluid">
+<div id="mhs" data-tab="[% tab | html %]" data-off="[% sourcesOff | html %]" data-order="[% sourceOrder | html %]">
+  <h1><span class="logo" aria-hidden="true">M</span> Koha MARC Helper settings</h1>
+  <p class="lead">These settings apply to everyone who catalogues in this Koha. The panel is on the <i>Add MARC record</i> page for staff with cataloguing permission; for a list of ISBNs and ISSNs use <a href="/cgi-bin/koha/plugins/run.pl?class=Koha%3A%3APlugin%3A%3AMarcHelper&amp;method=tool">Batch cataloguing</a> (also under <i>Tools &rsaquo; Tool plugins</i>).</p>
+  [% IF saved %]<div class="alert alert-ok" role="status">&#10003; Settings saved. They apply the next time the Add MARC record page is opened.</div>[% END %]
+  [% IF plack_workers && plack_workers < 6 %]
+  <div class="alert alert-warn" role="status">&#9888; This Koha runs <b>[% plack_workers | html %] Plack workers</b>. MARC Helper asks about 12 sources at once through the Koha server, so with fewer than 6 workers the requests queue and sources time out. Ask your system administrator to set <code>&lt;plack_workers&gt;8&lt;/plack_workers&gt;</code> in koha-conf.xml and restart Plack (<code>koha-plack --restart</code>).</div>
+  [% END %]
+
+  <form method="post" id="mhs-form">
+    [% TRY %][% INCLUDE 'csrf-token.inc' %][% CATCH %][% END %]
+    <input type="hidden" name="class" value="[% CLASS | html %]"/>
+    <input type="hidden" name="method" value="[% METHOD | html %]"/>
+    <input type="hidden" name="op" value="cud-save"/>
+    <input type="hidden" name="save" value="1"/>
+    <input type="hidden" name="tab" id="mhs-tab" value="[% tab | html %]"/>
+    <input type="hidden" name="sourcesOff" id="mhs-off" value="[% sourcesOff | html %]"/>
+    <input type="hidden" name="sourceOrder" id="mhs-order" value="[% sourceOrder | html %]"/>
+
+    <div class="tabs" role="tablist" aria-label="Settings">
+      <button type="button" role="tab" id="t-library" aria-controls="p-library">Library</button>
+      <button type="button" role="tab" id="t-rules" aria-controls="p-rules">Cataloguing rules</button>
+      <button type="button" role="tab" id="t-sources" aria-controls="p-sources">Sources</button>
+      <button type="button" role="tab" id="t-keys" aria-controls="p-keys">Keys</button>
+      <button type="button" role="tab" id="t-ai" aria-controls="p-ai">AI Helper</button>
+      <button type="button" role="tab" id="t-about" aria-controls="p-about">About</button>
+    </div>
+
+    <section class="panel" id="p-library" role="tabpanel" aria-labelledby="t-library" hidden>
+      <div class="row"><label for="institutionName">Institution name</label>
+        <div class="field"><input type="text" id="institutionName" name="institutionName" value="[% institutionName | html %]" placeholder="Your library's name"/>
+        <span class="help">Written into 040 $a and $c of every record.</span></div></div>
+      <div class="row"><label for="itemType">Koha item type</label>
+        <div class="field">
+        [% IF item_types.size %]
+          <select id="itemType" name="itemType">
+          [% FOREACH t IN item_types %]<option value="[% t.code | html %]" [% IF t.code == itemType %]selected[% END %]>[% t.code | html %] &ndash; [% t.name | html %]</option>[% END %]
+          </select>
+        [% ELSE %]
+          <input type="text" id="itemType" name="itemType" value="[% itemType | html %]" maxlength="10"/>
+        [% END %]
+        <span class="help">942 $c. From Administration &rsaquo; Item types.</span></div></div>
+      <div class="row"><label for="serialItemType">Koha item type for serials</label>
+        <div class="field">
+        [% IF item_types.size %]
+          <select id="serialItemType" name="serialItemType">
+          <option value="" [% UNLESS serialItemType %]selected[% END %]>The same as above</option>
+          [% FOREACH t IN item_types %]<option value="[% t.code | html %]" [% IF t.code == serialItemType %]selected[% END %]>[% t.code | html %] &ndash; [% t.name | html %]</option>[% END %]
+          </select>
+        [% ELSE %]
+          <input type="text" id="serialItemType" name="serialItemType" value="[% serialItemType | html %]" maxlength="10"/>
+        [% END %]
+        <span class="help">942 $c of journals and other serials found by ISSN.</span></div></div>
+      <div class="row"><label for="localFields">Local fields for every record</label>
+        <div class="field"><textarea id="localFields" name="localFields" rows="4" placeholder="590 ## a:Purchased under UGC grant">[% localFields | html %]</textarea>
+        <span class="help">One per line: tag, two indicators (# for blank), subfields as <code>a:Text | b:Text</code>.</span>
+        <span class="help" id="local-check" aria-live="polite"></span></div></div>
+    </section>
+
+    <section class="panel" id="p-rules" role="tabpanel" aria-labelledby="t-rules" hidden>
+      <p class="help" style="margin:0">The example under each rule shows the <i>Gitanjali</i> record as it would be written.</p>
+      <div class="row"><label for="ruleEndingPunctuation">Ending punctuation</label>
+        <div class="field"><select id="ruleEndingPunctuation" name="ruleEndingPunctuation">
+          <option value="remove" [% IF ruleEndingPunctuation == 'remove' %]selected[% END %]>Remove (clean data; abbreviations keep their period)</option>
+          <option value="keep" [% IF ruleEndingPunctuation == 'keep' %]selected[% END %]>Keep ISBD punctuation</option>
+        </select><div class="example" id="ex-punct"></div></div></div>
+      <div class="row"><label for="ruleStatement">Statement of responsibility (245 $c)</label>
+        <div class="field"><select id="ruleStatement" name="ruleStatement">
+          <option value="by" [% IF ruleStatement == 'by' %]selected[% END %]>Begin with "by", [et al.] for more than three</option>
+          <option value="transcribed" [% IF ruleStatement == 'transcribed' %]selected[% END %]>As transcribed by the source only</option>
+        </select><div class="example" id="ex-stmt"></div></div></div>
+      <div class="row"><label for="ruleOfThree">Rule of three</label>
+        <div class="field"><select id="ruleOfThree" name="ruleOfThree">
+          <option value="apply" [% IF ruleOfThree == 'apply' %]selected[% END %]>Apply (more than three authors: no 100, the first as 700)</option>
+          <option value="off" [% IF ruleOfThree == 'off' %]selected[% END %]>Off (100 for the first creator, 700 for the others)</option>
+        </select><div class="example" id="ex-three"></div></div></div>
+      <div class="row"><label for="ruleItemNumber">Item number (082 $b, 942 $i)</label>
+        <div class="field"><select id="ruleItemNumber" name="ruleItemNumber">
+          <option value="generate" [% IF ruleItemNumber == 'generate' %]selected[% END %]>Generate, e.g. TAG/G</option>
+          <option value="off" [% IF ruleItemNumber == 'off' %]selected[% END %]>Do not generate</option>
+        </select><div class="example" id="ex-item"></div></div></div>
+      <div class="row"><label for="rulePublicationField">Publication field</label>
+        <div class="field"><select id="rulePublicationField" name="rulePublicationField">
+          <option value="260" [% IF rulePublicationField == '260' %]selected[% END %]>260 (AACR2)</option>
+          <option value="264" [% IF rulePublicationField == '264' %]selected[% END %]>264 (RDA)</option>
+        </select><div class="example" id="ex-pub"></div></div></div>
+    </section>
+
+    <section class="panel" id="p-sources" role="tabpanel" aria-labelledby="t-sources" hidden>
+      <div class="row"><label for="kohaOpacs">Koha OPACs to search</label>
+        <div class="field"><textarea id="kohaOpacs" name="kohaOpacs" rows="4" placeholder="VU Library | https://vu-opac.kohacloud.in | sru=http://vu-opac.kohacloud.in:9999/biblios&#10;NVC Library | https://nvc-opac.kohacloud.in">[% kohaOpacs | html %]</textarea>
+        <span class="help">Other libraries' Koha OPACs, one per line: name | https OPAC address, and, if the library runs Koha's SRU server, | sru=http://host:9999/biblios (used first; the OPAC pages are the fallback); | api takes each record from Koha's public REST API (RESTPublicAPI), | api=https://host from another host. Each is searched like the other sources, and the full MARC record of each hit is taken from the OPAC's own export (items and local fields are not). The Koha server reaches only the OPACs listed here. Save, then <i>Test sources</i>.</span>
+        <span class="help" id="opac-check" aria-live="polite"></span></div></div>
+      <div class="inline"><button type="button" class="btn-g" id="test-sources">Test sources</button>
+        <span class="help" id="test-note">Searches a known ISBN through this Koha server and shows how each source answers. Saved settings and keys are used.</span></div>
+      <table class="src" aria-label="Sources">
+        <thead><tr><th>Order</th><th>Source</th><th>On</th><th>Searched by</th><th>Test</th></tr></thead>
+        <tbody id="src-rows"><tr><td colspan="5" class="help">Loading the list of sources&hellip;</td></tr></tbody>
+      </table>
+      <p class="help" style="margin:0">Results with the same ISBN and title are merged: the source higher in the list wins, and the others fill its gaps. Remember to save after changing the list.</p>
+    </section>
+
+    <section class="panel" id="p-keys" role="tabpanel" aria-labelledby="t-keys" hidden>
+      <p class="help" style="margin:0">All keys are optional. They stay on the Koha server[% IF encryption_ok %], encrypted,[% END %] and are never sent to browsers. Leave a box empty to keep the saved key; save before testing a new key.</p>
+      [% BLOCK keyrow %]
+      <div class="row"><label for="[% id %]">[% label %]</label>
+        <div class="field"><div class="inline">
+          <input type="password" id="[% id %]" name="[% id %]" autocomplete="off" placeholder="[% IF set %]&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull; saved[% ELSE %]Not set[% END %]"/>
+          [% IF source %]<button type="button" class="btn-o test-key" data-source="[% source %]" [% UNLESS set %]disabled title="Save a key first"[% END %]>Test key</button>[% END %]
+          <span class="pill [% IF set %]pill-ok[% ELSE %]pill-no[% END %]" id="[% id %]-state">[% IF set %]saved[% ELSE %]not set[% END %]</span>
+        </div>
+        [% IF set %]<label class="help"><input type="checkbox" name="[% id %]_clear" value="1"/> Remove the saved [% IF id.match('Secret') %]secret[% ELSE %]key[% END %]</label>[% END %]
+        <span class="help">[% help %]</span></div></div>
+      [% END %]
+      [% INCLUDE keyrow id='googleApiKey' label='Google Books API key' set=googleApiKey_set source='Google Books' help='Google Books works without a key, but the shared free quota is often used up; your own key avoids that.' %]
+      [% INCLUDE keyrow id='worldcatApiKey' label='WorldCat API key (WSKey)' set=worldcatApiKey_set source='WorldCat' help='For OCLC member libraries. Needs the secret below too.' %]
+      [% INCLUDE keyrow id='worldcatApiSecret' label='WorldCat API secret' set=worldcatApiSecret_set source='' help='' %]
+      [% INCLUDE keyrow id='isbnDbApiKey' label='ISBNdb API key' set=isbnDbApiKey_set source='ISBNdb' help='A paid service with wide coverage of trade books.' %]
+    </section>
+
+    <section class="panel" id="p-ai" role="tabpanel" aria-labelledby="t-ai" hidden>
+      <p class="help" style="margin:0">The AI Helper suggests 082, 500, 650 (LCSH or Sears) and a transliterated 246 for the record on the screen. Each suggestion is shown for review; nothing goes into the record unless the cataloguer clicks <i>Add</i>, and LCSH suggestions are checked at id.loc.gov.</p>
+      <div class="row"><label for="llmProvider">AI provider</label>
+        <div class="field"><select id="llmProvider" name="llmProvider">
+          <option value="" [% UNLESS llmProvider %]selected[% END %]>Off</option>
+          <option value="openai" [% IF llmProvider == 'openai' %]selected[% END %]>OpenAI (gpt-4o-mini)</option>
+          <option value="gemini" [% IF llmProvider == 'gemini' %]selected[% END %]>Google Gemini (gemini-2.5-flash)</option>
+          <option value="deepseek" [% IF llmProvider == 'deepseek' %]selected[% END %]>DeepSeek (deepseek-chat)</option>
+          <option value="perplexity" [% IF llmProvider == 'perplexity' %]selected[% END %]>Perplexity (sonar)</option>
+          <option value="ollama" [% IF llmProvider == 'ollama' %]selected[% END %]>Ollama (your own server)</option>
+          <option value="copilot" [% IF llmProvider == 'copilot' %]selected[% END %]>Azure OpenAI</option>
+        </select>
+        <span class="help">Privacy: the book's title, subtitle, author, publisher, year and summary are sent from this Koha server to the provider chosen here, under its terms. Nothing about patrons is sent. With Ollama the request stays on your own server or network.</span></div></div>
+      <div data-ai="openai">[% INCLUDE keyrow id='openaiApiKey' label='OpenAI API key' set=openaiApiKey_set source='' help='From platform.openai.com. Sent only to api.openai.com.' %]</div>
+      <div data-ai="gemini">[% INCLUDE keyrow id='geminiApiKey' label='Gemini API key' set=geminiApiKey_set source='' help='From Google AI Studio. Sent only to generativelanguage.googleapis.com.' %]</div>
+      <div data-ai="deepseek">[% INCLUDE keyrow id='deepseekApiKey' label='DeepSeek API key' set=deepseekApiKey_set source='' help='Sent only to api.deepseek.com.' %]</div>
+      <div data-ai="perplexity">[% INCLUDE keyrow id='perplexityApiKey' label='Perplexity API key' set=perplexityApiKey_set source='' help='Sent only to api.perplexity.ai.' %]</div>
+      <div data-ai="ollama">
+        <div class="row"><label for="ollamaBaseUrl">Ollama server</label>
+          <div class="field"><input type="text" id="ollamaBaseUrl" name="ollamaBaseUrl" value="[% ollamaBaseUrl | html %]" placeholder="http://localhost:11434"/>
+          <span class="help">As the Koha server reaches it (localhost is the Koha server itself). Only its /api/generate address is used.</span></div></div>
+        <div class="row"><label for="ollamaModel">Model</label>
+          <div class="field"><input type="text" id="ollamaModel" name="ollamaModel" value="[% ollamaModel | html %]" placeholder="llama3"/></div></div>
+      </div>
+      <div data-ai="copilot">
+        <div class="row"><label for="copilotEndpoint">Azure OpenAI endpoint</label>
+          <div class="field"><input type="text" id="copilotEndpoint" name="copilotEndpoint" value="[% copilotEndpoint | html %]" placeholder="https://name.openai.azure.com/openai/deployments/…/chat/completions?api-version=…"/>
+          <span class="help">The full chat completions address (https). Only this address is used.</span></div></div>
+        [% INCLUDE keyrow id='copilotApiKey' label='Azure OpenAI key' set=copilotApiKey_set source='' help='Sent only to the endpoint above.' %]
+      </div>
+      <div class="inline"><button type="button" class="btn-g" id="test-ai">Test AI Helper</button>
+        <span class="help" id="ai-note" aria-live="polite">Asks the saved provider for a 500 note on a sample book (<i>Gitanjali</i>). Save first.</span></div>
+    </section>
+
+    <section class="panel" id="p-about" role="tabpanel" aria-labelledby="t-about" hidden>
+      <dl class="about">
+        <dt>Version</dt><dd>[% plugin_version | html %] &middot; for Koha 22.11 and later[% IF koha_version %] &middot; this Koha is [% koha_version | html %][% END %]</dd>
+        <dt>Licence</dt><dd>GNU General Public License, version 3 or later</dd>
+        <dt>Developer</dt><dd>Amalendu Das</dd>
+        <dt>Server check</dt><dd>
+          <div>[% IF encryption_ok %]<span class="ok">&#10003;</span> Keys are encrypted (Koha encryption key is set)[% ELSE %]<span class="warn">&#9888;</span> No Koha encryption key: keys are stored unencrypted[% END %]</div>
+          <div>[% IF plack_workers %][% IF plack_workers < 6 %]<span class="warn">&#9888;</span> [% plack_workers | html %] Plack workers: sources may time out (8 recommended)[% ELSE %]<span class="ok">&#10003;</span> [% plack_workers | html %] Plack workers[% END %][% ELSE %]<span class="warn">&#9888;</span> Plack is not in use: searches will be slow[% END %]</div>
+          <div id="net-check"><span class="help">Outgoing internet: run <i>Test sources</i> on the Sources tab.</span></div>
+        </dd>
+      </dl>
+    </section>
+
+    <div class="actions">
+      <button type="submit" class="btn btn-primary">Save settings</button>
+      <a class="cancel" href="/cgi-bin/koha/plugins/plugins-home.pl">Back to plugins</a>
+    </div>
+  </form>
+</div>
+</div>
+
+<script src="[% static %]marc-parser.js?v=[% plugin_version | uri %]"></script>
+<script src="[% static %]marcxml.js?v=[% plugin_version | uri %]"></script>
+<script src="[% static %]marc-tools.js?v=[% plugin_version | uri %]"></script>
+<script src="[% static %]engine.js?v=[% plugin_version | uri %]"></script>
+<script src="[% static %]panel.js?v=[% plugin_version | uri %]"></script>
+<script src="[% static %]settings.js?v=[% plugin_version | uri %]"></script>
+[% INCLUDE 'intranet-bottom.inc' %]

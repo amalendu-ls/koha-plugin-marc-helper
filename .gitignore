@@ -1,0 +1,22 @@
+# Built packages and the build folder (tools/build_kpz.py)
+build/
+dist/
+*.kpz
+
+# Keys and logins: never in the repository
+google-key.txt
+t/google-key.txt
+t/test-koha-login.txt
+*.key
+.env
+
+# Local test data and working files
+t/batch-test/
+design/
+node_modules/
+__pycache__/
+*.pyc
+.claude/
+.vscode/
+.DS_Store
+Thumbs.db

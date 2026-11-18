@@ -1,0 +1,118 @@
+[%# Koha MARC Helper batch cataloguing page (Tools › Plugins). GPL v3 or later, see LICENSE. %]
+[% SET static = '/api/v1/contrib/marchelper/static/static/' %]
+[% INCLUDE 'doc-head-open.inc' %]
+<title>Koha MARC Helper: Batch cataloguing &rsaquo; Tools &rsaquo; Koha</title>
+[% INCLUDE 'doc-head-close.inc' %]
+<link rel="stylesheet" href="[% static %]panel.css?v=[% plugin_version | uri %]"/>
+<style>
+  /* Own styles, scoped to this page, so it looks the same on Koha 22.11 to 26.x */
+  #mhb { --g: #408540; --gd: #2f6a2f; --line: #d7ded8; --muted: #5d6b61; --warn: #8a5300; --bad: #b3261e;
+         max-width: 1100px; padding: 8px 16px 40px; color: #1f2a22; font-size: 14px; }
+  #mhb *, #mhb *::before, #mhb *::after { box-sizing: border-box; }
+  #mhb h1 { display: flex; align-items: center; gap: 10px; font-size: 24px; font-weight: 700; margin: 8px 0 4px; }
+  #mhb h2 { font-size: 16px; font-weight: 700; margin: 0 0 8px; }
+  #mhb .logo { width: 34px; height: 34px; border-radius: 8px; background: var(--g); color: #fff; display: grid; place-items: center; font-size: 18px; }
+  #mhb .lead, #mhb .help { color: var(--muted); }
+  #mhb .help { font-size: 12.5px; }
+  #mhb .box { background: #fff; border: 1px solid var(--line); border-radius: 8px; padding: 16px 18px; margin: 14px 0; }
+  #mhb textarea { width: 100%; max-width: 520px; border: 1px solid #b9c4bb; border-radius: 6px; padding: 7px 10px; font: 13px Consolas, monospace; }
+  #mhb select, #mhb input[type=text] { border: 1px solid #b9c4bb; border-radius: 6px; padding: 6px 9px; font-size: 14px; }
+  #mhb .row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: 10px; }
+  #mhb .grow { flex: 1; }
+  #mhb .btn-g { background: var(--g); border: 1px solid var(--g); color: #fff; border-radius: 6px; padding: 7px 14px; font-weight: 600; cursor: pointer; }
+  #mhb .btn-g:hover { background: var(--gd); }
+  #mhb .btn-o { background: #fff; border: 1px solid #b9c4bb; border-radius: 6px; padding: 6px 12px; font-weight: 600; cursor: pointer; }
+  #mhb .btn-x { background: none; border: 0; color: var(--muted); cursor: pointer; padding: 2px 6px; }
+  #mhb .btn-g:disabled, #mhb .btn-o:disabled { opacity: .55; cursor: default; }
+  #mhb table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+  #mhb th, #mhb td { text-align: left; padding: 7px 8px; border-bottom: 1px solid #edf1ee; vertical-align: middle; }
+  #mhb th { font-size: 12px; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); }
+  #mhb td.num { font-family: Consolas, monospace; white-space: nowrap; }
+  #mhb tr.editing { background: #f1f7f1; }
+  #mhb .pill { display: inline-block; padding: 1px 9px; border-radius: 10px; font-size: 12px; font-weight: 600; background: #eef2ef; color: var(--muted); white-space: nowrap; }
+  #mhb .pill-found { background: #e3f1e5; color: #1e7b34; }
+  #mhb .pill-check, #mhb .pill-searching { background: #fdf3e1; color: var(--warn); }
+  #mhb .pill-notFound, #mhb .pill-invalid, #mhb .pill-error { background: #fdecea; color: var(--bad); }
+  #mhb .pill-staged { background: #e6eef6; color: #22577a; }
+  #mhb .alert { border-radius: 6px; padding: 9px 12px; margin: 10px 0 0; }
+  #mhb .ok { color: #1e7b34; } #mhb .bad { color: var(--bad); }
+</style>
+</head>
+<body id="plugins_marchelper_batch" class="tools">
+[% INCLUDE 'header.inc' %]
+[% INCLUDE 'cat-search.inc' %]
+
+<nav id="breadcrumbs" aria-label="Breadcrumb" class="breadcrumb">
+  <a href="/cgi-bin/koha/mainpage.pl">Home</a> &rsaquo;
+  <a href="/cgi-bin/koha/tools/tools-home.pl">Tools</a> &rsaquo;
+  <a href="/cgi-bin/koha/plugins/plugins-home.pl?method=tool">Tool plugins</a> &rsaquo;
+  Koha MARC Helper &rsaquo; Batch cataloguing
+</nav>
+
+<div class="main container-fluid">
+<div id="mhb" data-version="[% plugin_version | html %]" data-can-stage="[% can_stage | html %]">
+  <h1><span class="logo" aria-hidden="true">M</span> Batch cataloguing</h1>
+  <p class="lead">Give a list of ISBNs (books) and ISSNs (journals and other serials). Each is searched in turn, with the same sources and cataloguing rules as the panel on the <i>Add MARC record</i> page. Check each record, then stage them in Koha and import them from <i>Manage staged MARC records</i>: Koha's matching rule finds the ones already in your catalogue.</p>
+  [% UNLESS can_catalogue %]
+  <div class="alert alert-warning" role="alert">You need the cataloguing permission (edit_catalogue) to use batch cataloguing.</div>
+  [% ELSE %]
+
+  <section class="box" aria-labelledby="mhb-add-h">
+    <h2 id="mhb-add-h">1. Numbers to catalogue</h2>
+    <label for="mhb-input" class="help">ISBNs or ISSNs, one per line (type, paste, scan, or read from a text file). Repeats are left out.</label>
+    <div><textarea id="mhb-input" rows="6" placeholder="9780262033848&#10;0028-0836&#10;9788126585410"></textarea></div>
+    <div class="row">
+      <button type="button" class="btn-g" id="mhb-add">Add to the queue</button>
+      <label class="btn-o" for="mhb-file" style="margin:0">Read a text file&hellip;</label>
+      <input type="file" id="mhb-file" accept=".txt,.csv,text/plain" hidden/>
+      <span class="help" id="mhb-add-note" aria-live="polite"></span>
+    </div>
+  </section>
+
+  <section class="box" aria-labelledby="mhb-queue-h">
+    <h2 id="mhb-queue-h">2. Search and check</h2>
+    <div class="row">
+      <button type="button" class="btn-g" id="mhb-start">Search the waiting numbers</button>
+      <button type="button" class="btn-o" id="mhb-stop" hidden>Stop after this one</button>
+      <span class="grow"></span>
+      <button type="button" class="btn-o" id="mhb-clear">Clear the queue&hellip;</button>
+    </div>
+    <p class="help" id="mhb-summary" aria-live="polite"></p>
+    <table aria-labelledby="mhb-queue-h">
+      <thead><tr><th>Stage</th><th>Number</th><th>Status</th><th>Title</th><th>Source</th><th><span class="sr-only">Actions</span></th></tr></thead>
+      <tbody id="mhb-rows"></tbody>
+    </table>
+  </section>
+
+  <section class="box" aria-labelledby="mhb-stage-h">
+    <h2 id="mhb-stage-h">3. Into Koha</h2>
+    <p class="help" style="margin:0">The records ticked under <i>Stage</i> are sent to Koha's staging area (nothing is added to the catalogue yet). Records the matching rule finds in your catalogue are marked and left alone; you import the batch in <i>Tools &rsaquo; Manage staged MARC records</i>.</p>
+    <div class="row">
+      <label for="mhb-matcher">Matching rule</label>
+      <select id="mhb-matcher"><option value="">None</option></select>
+      <label for="mhb-name">Batch name</label>
+      <input type="text" id="mhb-name" maxlength="80"/>
+    </div>
+    <div class="row">
+      [% IF can_stage %]<button type="button" class="btn-g" id="mhb-stage">Stage in Koha</button>
+      [% ELSE %]<span class="help">Staging needs the permission <i>Stage MARC records into the reservoir</i> (tools: stage_marc_import); you can still download the records.</span>[% END %]
+      <button type="button" class="btn-o" id="mhb-mrc">Download .mrc</button>
+      <button type="button" class="btn-o" id="mhb-xml">Download MARCXML</button>
+    </div>
+    <div id="mhb-stage-note" aria-live="polite"></div>
+  </section>
+  [% END %]
+</div>
+</div>
+
+[% IF can_catalogue %]
+<script src="[% static %]marc-parser.js?v=[% plugin_version | uri %]"></script>
+<script src="[% static %]marcxml.js?v=[% plugin_version | uri %]"></script>
+<script src="[% static %]marc-tools.js?v=[% plugin_version | uri %]"></script>
+<script src="[% static %]marc-labels.js?v=[% plugin_version | uri %]"></script>
+<script src="[% static %]engine.js?v=[% plugin_version | uri %]"></script>
+<script src="[% static %]filler.js?v=[% plugin_version | uri %]"></script>
+<script src="[% static %]panel.js?v=[% plugin_version | uri %]"></script>
+<script src="[% static %]batch.js?v=[% plugin_version | uri %]"></script>
+[% END %]
+[% INCLUDE 'intranet-bottom.inc' %]

@@ -1,0 +1,281 @@
+{
+  "/settings": {
+    "get": {
+      "x-mojo-to": "MarcHelper::Controller#settings",
+      "operationId": "marcHelperSettings",
+      "tags": [
+        "marchelper"
+      ],
+      "produces": [
+        "application/json"
+      ],
+      "responses": {
+        "200": {
+          "description": "The library's settings; API keys are placeholders",
+          "schema": {
+            "type": "object"
+          }
+        },
+        "500": {
+          "description": "Error",
+          "schema": {
+            "type": "object"
+          }
+        }
+      },
+      "x-koha-authorization": {
+        "permissions": {
+          "editcatalogue": "edit_catalogue"
+        }
+      }
+    }
+  },
+  "/relay": {
+    "post": {
+      "x-mojo-to": "MarcHelper::Controller#relay",
+      "operationId": "marcHelperRelay",
+      "tags": [
+        "marchelper"
+      ],
+      "parameters": [
+        {
+          "name": "body",
+          "in": "body",
+          "description": "The request to send: url, method, headers, body, cookies",
+          "required": true,
+          "schema": {
+            "type": "object",
+            "properties": {
+              "url": {
+                "type": "string"
+              },
+              "method": {
+                "type": "string"
+              },
+              "headers": {
+                "type": "object"
+              },
+              "body": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "cookies": {
+                "type": "object"
+              }
+            },
+            "required": [
+              "url"
+            ]
+          }
+        }
+      ],
+      "consumes": [
+        "application/json"
+      ],
+      "produces": [
+        "application/json"
+      ],
+      "responses": {
+        "200": {
+          "description": "The source's answer, or an error when it was not fetched",
+          "schema": {
+            "type": "object"
+          }
+        },
+        "500": {
+          "description": "Error",
+          "schema": {
+            "type": "object"
+          }
+        }
+      },
+      "x-koha-authorization": {
+        "permissions": {
+          "editcatalogue": "edit_catalogue"
+        }
+      }
+    }
+  },
+  "/relay/batch": {
+    "post": {
+      "x-mojo-to": "MarcHelper::Controller#relay_batch",
+      "operationId": "marcHelperRelayBatch",
+      "tags": [
+        "marchelper"
+      ],
+      "parameters": [
+        {
+          "name": "body",
+          "in": "body",
+          "required": true,
+          "description": "Up to 30 requests, each as for /relay; fetched at the same time",
+          "schema": {
+            "type": "object",
+            "properties": {
+              "requests": {
+                "type": "array",
+                "items": {
+                  "type": "object"
+                }
+              }
+            },
+            "required": [
+              "requests"
+            ]
+          }
+        }
+      ],
+      "consumes": [
+        "application/json"
+      ],
+      "produces": [
+        "application/json"
+      ],
+      "responses": {
+        "200": {
+          "description": "One result per request, in the same order",
+          "schema": {
+            "type": "object"
+          }
+        },
+        "500": {
+          "description": "Error",
+          "schema": {
+            "type": "object"
+          }
+        }
+      },
+      "x-koha-authorization": {
+        "permissions": {
+          "editcatalogue": "edit_catalogue"
+        }
+      }
+    }
+  },
+  "/authorities": {
+    "post": {
+      "x-mojo-to": "MarcHelper::Controller#authorities",
+      "operationId": "marcHelperAuthorities",
+      "tags": [
+        "marchelper"
+      ],
+      "parameters": [
+        {
+          "name": "body",
+          "in": "body",
+          "required": true,
+          "description": "Up to 40 headings: tag, ind1, ind2, subfields [[code, value], ...]",
+          "schema": {
+            "type": "object",
+            "properties": {
+              "headings": {
+                "type": "array",
+                "items": {
+                  "type": "object"
+                }
+              }
+            },
+            "required": [
+              "headings"
+            ]
+          }
+        }
+      ],
+      "consumes": [
+        "application/json"
+      ],
+      "produces": [
+        "application/json"
+      ],
+      "responses": {
+        "200": {
+          "description": "One result per heading: the library's matching authority records",
+          "schema": {
+            "type": "object"
+          }
+        },
+        "500": {
+          "description": "Error",
+          "schema": {
+            "type": "object"
+          }
+        }
+      },
+      "x-koha-authorization": {
+        "permissions": {
+          "editcatalogue": "edit_catalogue"
+        }
+      }
+    }
+  },
+  "/stage": {
+    "post": {
+      "x-mojo-to": "MarcHelper::Controller#stage",
+      "operationId": "marcHelperStage",
+      "tags": [
+        "marchelper"
+      ],
+      "parameters": [
+        {
+          "name": "body",
+          "in": "body",
+          "required": true,
+          "description": "The reviewed records as one MARCXML collection, a batch name and a matching rule",
+          "schema": {
+            "type": "object",
+            "properties": {
+              "marcxml": {
+                "type": "string"
+              },
+              "name": {
+                "type": "string"
+              },
+              "matcher_id": {
+                "type": [
+                  "integer",
+                  "null"
+                ]
+              }
+            },
+            "required": [
+              "marcxml"
+            ]
+          }
+        }
+      ],
+      "consumes": [
+        "application/json"
+      ],
+      "produces": [
+        "application/json"
+      ],
+      "responses": {
+        "200": {
+          "description": "The staged batch: its number, counts and link",
+          "schema": {
+            "type": "object"
+          }
+        },
+        "400": {
+          "description": "Nothing staged, with the reason",
+          "schema": {
+            "type": "object"
+          }
+        },
+        "500": {
+          "description": "Error",
+          "schema": {
+            "type": "object"
+          }
+        }
+      },
+      "x-koha-authorization": {
+        "permissions": {
+          "tools": "stage_marc_import"
+        }
+      }
+    }
+  }
+}

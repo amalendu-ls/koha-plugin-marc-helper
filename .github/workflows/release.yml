@@ -1,0 +1,58 @@
+# Koha MARC Helper plugin: check every push, and publish a release with the .kpz for a
+# version tag (git tag v1.0.0 && git push origin v1.0.0). The tag must match $VERSION in
+# Koha/Plugin/MarcHelper.pm. Only GitHub's own actions and the gh command are used.
+name: Build
+
+on:
+  push:
+    branches: [main]
+    tags: ['v*']
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Build the .kpz (from the shared code kept in the repository)
+        run: python3 tools/build_kpz.py dist
+      - name: Tests that need no Koha
+        run: node t/headings.test.js
+      - name: Perl syntax of the relay (the other modules need Koha itself)
+        run: |
+          sudo apt-get update -qq && sudo apt-get install -y -qq libmodern-perl-perl libwww-perl liburi-perl libmojolicious-perl >/dev/null
+          perl -c Koha/Plugin/MarcHelper/Relay.pm
+      - uses: actions/upload-artifact@v4
+        with:
+          name: kpz
+          path: dist/*.kpz
+
+  release:
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: kpz
+          path: dist
+      - name: The tag matches the plugin version
+        run: |
+          version=$(grep -oP "our \\\$VERSION\s*=\s*'\K[^']+" Koha/Plugin/MarcHelper.pm)
+          test "v$version" = "${GITHUB_REF_NAME}" || { echo "Tag ${GITHUB_REF_NAME} but the plugin says $version"; exit 1; }
+      - name: Publish the release with the .kpz
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "${GITHUB_REF_NAME}" dist/*.kpz \
+            --title "Koha MARC Helper ${GITHUB_REF_NAME}" \
+            --notes "See CHANGELOG.md. Install: Koha › Administration › Plugins › Upload plugin, and choose the .kpz below."

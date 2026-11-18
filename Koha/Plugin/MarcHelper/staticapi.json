@@ -1,0 +1,612 @@
+{
+ "/static/batch.js": {
+  "get": {
+   "x-mojo-to": "Static#get",
+   "tags": [
+    "pluginStatic"
+   ],
+   "parameters": [
+    {
+     "name": "v",
+     "in": "query",
+     "required": false,
+     "type": "string",
+     "description": "Plugin version, so upgrades are not served from the browser cache"
+    }
+   ],
+   "produces": [
+    "application/javascript"
+   ],
+   "responses": {
+    "200": {
+     "description": "File found",
+     "schema": {
+      "type": "file"
+     }
+    },
+    "400": {
+     "description": "Bad request",
+     "schema": {
+      "type": "object",
+      "properties": {
+       "error": {
+        "type": "string"
+       }
+      }
+     }
+    },
+    "404": {
+     "description": "File not found",
+     "schema": {
+      "type": "object",
+      "properties": {
+       "error": {
+        "type": "string"
+       }
+      }
+     }
+    },
+    "500": {
+     "description": "Internal server error",
+     "schema": {
+      "type": "object",
+      "properties": {
+       "error": {
+        "type": "string"
+       }
+      }
+     }
+    }
+   }
+  }
+ },
+ "/static/engine.js": {
+  "get": {
+   "x-mojo-to": "Static#get",
+   "tags": [
+    "pluginStatic"
+   ],
+   "parameters": [
+    {
+     "name": "v",
+     "in": "query",
+     "required": false,
+     "type": "string",
+     "description": "Plugin version, so upgrades are not served from the browser cache"
+    }
+   ],
+   "produces": [
+    "application/javascript"
+   ],
+   "responses": {
+    "200": {
+     "description": "File found",
+     "schema": {
+      "type": "file"
+     }
+    },
+    "400": {
+     "description": "Bad request",
+     "schema": {
+      "type": "object",
+      "properties": {
+       "error": {
+        "type": "string"
+       }
+      }
+     }
+    },
+    "404": {
+     "description": "File not found",
+     "schema": {
+      "type": "object",
+      "properties": {
+       "error": {
+        "type": "string"
+       }
+      }
+     }
+    },
+    "500": {
+     "description": "Internal server error",
+     "schema": {
+      "type": "object",
+      "properties": {
+       "error": {
+        "type": "string"
+       }
+      }
+     }
+    }
+   }
+  }
+ },
+ "/static/filler.js": {
+  "get": {
+   "x-mojo-to": "Static#get",
+   "tags": [
+    "pluginStatic"
+   ],
+   "parameters": [
+    {
+     "name": "v",
+     "in": "query",
+     "required": false,
+     "type": "string",
+     "description": "Plugin version, so upgrades are not served from the browser cache"
+    }
+   ],
+   "produces": [
+    "application/javascript"
+   ],
+   "responses": {
+    "200": {
+     "description": "File found",
+     "schema": {
+      "type": "file"
+     }
+    },
+    "400": {
+     "description": "Bad request",
+     "schema": {
+      "type": "object",
+      "properties": {
+       "error": {
+        "type": "string"
+       }
+      }
+     }
+    },
+    "404": {
+     "description": "File not found",
+     "schema": {
+      "type": "object",
+      "properties": {
+       "error": {
+        "type": "string"
+       }
+      }
+     }
+    },
+    "500": {
+     "description": "Internal server error",
+     "schema": {
+      "type": "object",
+      "properties": {
+       "error": {
+        "type": "string"
+       }
+      }
+     }
+    }
+   }
+  }
+ },
+ "/static/marc-labels.js": {
+  "get": {
+   "x-mojo-to": "Static#get",
+   "tags": [
+    "pluginStatic"
+   ],
+   "parameters": [
+    {
+     "name": "v",
+     "in": "query",
+     "required": false,
+     "type": "string",
+     "description": "Plugin version, so upgrades are not served from the browser cache"
+    }
+   ],
+   "produces": [
+    "application/javascript"
+   ],
+   "responses": {
+    "200": {
+     "description": "File found",
+     "schema": {
+      "type": "file"
+     }
+    },
+    "400": {
+     "description": "Bad request",
+     "schema": {
+      "type": "object",
+      "properties": {
+       "error": {
+        "type": "string"
+       }
+      }
+     }
+    },
+    "404": {
+     "description": "File not found",
+     "schema": {
+      "type": "object",
+      "properties": {
+       "error": {
+        "type": "string"
+       }
+      }
+     }
+    },
+    "500": {
+     "description": "Internal server error",
+     "schema": {
+      "type": "object",
+      "properties": {
+       "error": {
+        "type": "string"
+       }
+      }
+     }
+    }
+   }
+  }
+ },
+ "/static/marc-parser.js": {
+  "get": {
+   "x-mojo-to": "Static#get",
+   "tags": [
+    "pluginStatic"
+   ],
+   "parameters": [
+    {
+     "name": "v",
+     "in": "query",
+     "required": false,
+     "type": "string",
+     "description": "Plugin version, so upgrades are not served from the browser cache"
+    }
+   ],
+   "produces": [
+    "application/javascript"
+   ],
+   "responses": {
+    "200": {
+     "description": "File found",
+     "schema": {
+      "type": "file"
+     }
+    },
+    "400": {
+     "description": "Bad request",
+     "schema": {
+      "type": "object",
+      "properties": {
+       "error": {
+        "type": "string"
+       }
+      }
+     }
+    },
+    "404": {
+     "description": "File not found",
+     "schema": {
+      "type": "object",
+      "properties": {
+       "error": {
+        "type": "string"
+       }
+      }
+     }
+    },
+    "500": {
+     "description": "Internal server error",
+     "schema": {
+      "type": "object",
+      "properties": {
+       "error": {
+        "type": "string"
+       }
+      }
+     }
+    }
+   }
+  }
+ },
+ "/static/marc-tools.js": {
+  "get": {
+   "x-mojo-to": "Static#get",
+   "tags": [
+    "pluginStatic"
+   ],
+   "parameters": [
+    {
+     "name": "v",
+     "in": "query",
+     "required": false,
+     "type": "string",
+     "description": "Plugin version, so upgrades are not served from the browser cache"
+    }
+   ],
+   "produces": [
+    "application/javascript"
+   ],
+   "responses": {
+    "200": {
+     "description": "File found",
+     "schema": {
+      "type": "file"
+     }
+    },
+    "400": {
+     "description": "Bad request",
+     "schema": {
+      "type": "object",
+      "properties": {
+       "error": {
+        "type": "string"
+       }
+      }
+     }
+    },
+    "404": {
+     "description": "File not found",
+     "schema": {
+      "type": "object",
+      "properties": {
+       "error": {
+        "type": "string"
+       }
+      }
+     }
+    },
+    "500": {
+     "description": "Internal server error",
+     "schema": {
+      "type": "object",
+      "properties": {
+       "error": {
+        "type": "string"
+       }
+      }
+     }
+    }
+   }
+  }
+ },
+ "/static/marcxml.js": {
+  "get": {
+   "x-mojo-to": "Static#get",
+   "tags": [
+    "pluginStatic"
+   ],
+   "parameters": [
+    {
+     "name": "v",
+     "in": "query",
+     "required": false,
+     "type": "string",
+     "description": "Plugin version, so upgrades are not served from the browser cache"
+    }
+   ],
+   "produces": [
+    "application/javascript"
+   ],
+   "responses": {
+    "200": {
+     "description": "File found",
+     "schema": {
+      "type": "file"
+     }
+    },
+    "400": {
+     "description": "Bad request",
+     "schema": {
+      "type": "object",
+      "properties": {
+       "error": {
+        "type": "string"
+       }
+      }
+     }
+    },
+    "404": {
+     "description": "File not found",
+     "schema": {
+      "type": "object",
+      "properties": {
+       "error": {
+        "type": "string"
+       }
+      }
+     }
+    },
+    "500": {
+     "description": "Internal server error",
+     "schema": {
+      "type": "object",
+      "properties": {
+       "error": {
+        "type": "string"
+       }
+      }
+     }
+    }
+   }
+  }
+ },
+ "/static/panel.css": {
+  "get": {
+   "x-mojo-to": "Static#get",
+   "tags": [
+    "pluginStatic"
+   ],
+   "parameters": [
+    {
+     "name": "v",
+     "in": "query",
+     "required": false,
+     "type": "string",
+     "description": "Plugin version, so upgrades are not served from the browser cache"
+    }
+   ],
+   "produces": [
+    "text/css"
+   ],
+   "responses": {
+    "200": {
+     "description": "File found",
+     "schema": {
+      "type": "file"
+     }
+    },
+    "400": {
+     "description": "Bad request",
+     "schema": {
+      "type": "object",
+      "properties": {
+       "error": {
+        "type": "string"
+       }
+      }
+     }
+    },
+    "404": {
+     "description": "File not found",
+     "schema": {
+      "type": "object",
+      "properties": {
+       "error": {
+        "type": "string"
+       }
+      }
+     }
+    },
+    "500": {
+     "description": "Internal server error",
+     "schema": {
+      "type": "object",
+      "properties": {
+       "error": {
+        "type": "string"
+       }
+      }
+     }
+    }
+   }
+  }
+ },
+ "/static/panel.js": {
+  "get": {
+   "x-mojo-to": "Static#get",
+   "tags": [
+    "pluginStatic"
+   ],
+   "parameters": [
+    {
+     "name": "v",
+     "in": "query",
+     "required": false,
+     "type": "string",
+     "description": "Plugin version, so upgrades are not served from the browser cache"
+    }
+   ],
+   "produces": [
+    "application/javascript"
+   ],
+   "responses": {
+    "200": {
+     "description": "File found",
+     "schema": {
+      "type": "file"
+     }
+    },
+    "400": {
+     "description": "Bad request",
+     "schema": {
+      "type": "object",
+      "properties": {
+       "error": {
+        "type": "string"
+       }
+      }
+     }
+    },
+    "404": {
+     "description": "File not found",
+     "schema": {
+      "type": "object",
+      "properties": {
+       "error": {
+        "type": "string"
+       }
+      }
+     }
+    },
+    "500": {
+     "description": "Internal server error",
+     "schema": {
+      "type": "object",
+      "properties": {
+       "error": {
+        "type": "string"
+       }
+      }
+     }
+    }
+   }
+  }
+ },
+ "/static/settings.js": {
+  "get": {
+   "x-mojo-to": "Static#get",
+   "tags": [
+    "pluginStatic"
+   ],
+   "parameters": [
+    {
+     "name": "v",
+     "in": "query",
+     "required": false,
+     "type": "string",
+     "description": "Plugin version, so upgrades are not served from the browser cache"
+    }
+   ],
+   "produces": [
+    "application/javascript"
+   ],
+   "responses": {
+    "200": {
+     "description": "File found",
+     "schema": {
+      "type": "file"
+     }
+    },
+    "400": {
+     "description": "Bad request",
+     "schema": {
+      "type": "object",
+      "properties": {
+       "error": {
+        "type": "string"
+       }
+      }
+     }
+    },
+    "404": {
+     "description": "File not found",
+     "schema": {
+      "type": "object",
+      "properties": {
+       "error": {
+        "type": "string"
+       }
+      }
+     }
+    },
+    "500": {
+     "description": "Internal server error",
+     "schema": {
+      "type": "object",
+      "properties": {
+       "error": {
+        "type": "string"
+       }
+      }
+     }
+    }
+   }
+  }
+ }
+}

@@ -1,0 +1,4 @@
+# Koha runs on Linux: keep Unix line endings in the repository and the working copy
+* text=auto eol=lf
+*.png binary
+*.kpz binary
