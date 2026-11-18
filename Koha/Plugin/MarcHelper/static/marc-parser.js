@@ -984,8 +984,11 @@ function buildMarcRecord(book = {}, options = {}) {
 
   // 6XX - Subject access: controlled headings from the source catalogue
   // (LCSH, ind2 0; LC genre/form terms, 655 _7 $2 lcgft)
+  // A 650/651 "LCSH" heading whose first word has no capital letter is a term some catalogue
+  // coded as LCSH in its own language ("algoritmer"), not LCSH ("iPhone (Smartphone)" is kept)
+  const notLcsh = f => (f.tag === "650" || f.tag === "651") && /^\p{Ll}[^\s\p{Lu}]*(\s|$)/u.test(String(subfieldValue(f, "a") || "").trim());
   const sourceSubjects = SUBJECT_TAGS.flatMap(tag => fromSource(tag))
-    .filter(f => f.indicators[1] === "0" || (f.tag === "655" && f.indicators[1] === "7" && subfieldValue(f, "2") === "lcgft"));
+    .filter(f => (f.indicators[1] === "0" && !notLcsh(f)) || (f.tag === "655" && f.indicators[1] === "7" && subfieldValue(f, "2") === "lcgft"));
   sourceSubjects.forEach((field, i) => { sourceSubjects[i] = splitDashedHeading(field); add(sourceSubjects[i]); });
 
   // LCSH headings (indicator 2 "0") from the other sources of the same book (merged
@@ -993,7 +996,8 @@ function buildMarcRecord(book = {}, options = {}) {
   const headingKey = subfields => subfields.map(sf => caseKey(Object.values(sf)[0])).join("--");
   const seenHeadings = new Set(sourceSubjects.filter(f => f.tag === "650").map(f => headingKey(f.subfields.filter(sf => "axyzv".includes(Object.keys(sf)[0])))));
   const lcshHeadings = (Array.isArray(book.lcshHeadings) ? book.lcshHeadings : [])
-    .filter(h => Array.isArray(h) && h.length && h.every(sf => !isPlaceholder(Object.values(sf)[0])));
+    .filter(h => Array.isArray(h) && h.length && h.every(sf => !isPlaceholder(Object.values(sf)[0]))
+      && !notLcsh({tag: "650", subfields: h}));
   let lcshAdded = 0;
   lcshHeadings.forEach(heading => {
     const key = headingKey(heading);

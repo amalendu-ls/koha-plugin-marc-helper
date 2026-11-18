@@ -21,7 +21,7 @@ use C4::Context;
 use Mojo::JSON qw(decode_json encode_json);
 use URI;
 
-our $VERSION         = '1.0.0';
+our $VERSION         = '1.0.1';
 our $MINIMUM_VERSION = '22.11.00.000';
 
 our $metadata = {
@@ -126,10 +126,42 @@ sub client_settings {
     return $settings;
 }
 
+# A page of this plugin, with Koha's login cookie. Koha::Plugins::Base::get_template drops
+# the cookie Koha makes when staff log in on the page itself (after their session ran out),
+# so the browser kept its old, logged-out cookie and the page asked for the login again and
+# again; here the cookie is kept and sent with the page (_show).
+sub _page {
+    my ( $self, $file ) = @_;
+    require C4::Auth;
+    require C4::Languages;
+    my ( $template, undef, $cookie ) = C4::Auth::get_template_and_user(
+        {
+            template_name   => $self->mbf_path($file),
+            query           => $self->{cgi},
+            type            => 'intranet',
+            authnotrequired => 1,
+        }
+    );
+    $template->param(
+        CLASS       => $self->{class},
+        METHOD      => scalar $self->{cgi}->param('method'),
+        PLUGIN_PATH => $self->get_plugin_http_path(),
+        PLUGIN_DIR  => $self->bundle_path(),
+        LANG        => C4::Languages::getlanguage( $self->{cgi} ),
+    );
+    return ( $template, $cookie );
+}
+
+sub _show {
+    my ( $self, $template, $cookie ) = @_;
+    require C4::Output;
+    C4::Output::output_with_http_headers( $self->{cgi}, $cookie, $template->output(), 'html' );
+}
+
 # Tools › Plugins › Koha MARC Helper: batch cataloguing
 sub tool {
     my ($self) = @_;
-    my $template = $self->get_template( { file => 'tool.tt' } );
+    my ( $template, $cookie ) = $self->_page('tool.tt');
     my $userid   = eval { C4::Context->userenv->{id} } // '';
     require C4::Auth;
     $template->param(
@@ -137,7 +169,7 @@ sub tool {
         can_stage      => ( C4::Auth::haspermission( $userid, { tools => 'stage_marc_import' } ) ? 1 : 0 ),
         can_catalogue  => ( C4::Auth::haspermission( $userid, { editcatalogue => 'edit_catalogue' } ) ? 1 : 0 ),
     );
-    $self->output_html( $template->output() );
+    $self->_show( $template, $cookie );
 }
 
 # The AI provider the library chose: its one address, and for Azure OpenAI the host its key
@@ -250,7 +282,7 @@ sub configure {
         $self->store_data( \%data );
     }
 
-    my $template = $self->get_template( { file => 'configure.tt' } );
+    my ( $template, $cookie ) = $self->_page('configure.tt');
     my $secrets  = $self->secrets;
     my $tab      = $cgi->param('tab') // '';
     $template->param(
@@ -264,7 +296,7 @@ sub configure {
         plack_workers => eval { C4::Context->config('plack_workers') } // '',
         encryption_ok => ( eval { require Koha::Encryption; Koha::Encryption->new; 1 } ? 1 : 0 ),
     );
-    $self->output_html( $template->output() );
+    $self->_show( $template, $cookie );
 }
 
 # Item types of this Koha, for the 942 $c choice (empty list: a text box is shown)

@@ -2,6 +2,14 @@
 
 Koha MARC Helper – Koha plugin (`Koha::Plugin::MarcHelper`). GNU GPL v3 or later.
 
+## 1.0.1 — 2026-11-18
+
+- **Login on the plugin's own pages:** when a session had run out and staff logged in again on *Batch cataloguing* or the settings page, the new login was lost (the page said the panel could not start, and asked for the login again). The pages now keep Koha's login cookie.
+- **Check headings:** a Library of Congress heading that LC lists with one of its *see from* forms (for example *Computer programming*) was reported as not found; it is now recognised as authorised.
+- **Subject headings:** terms that some catalogues code as LCSH in their own language (650 second indicator 0, e.g. *algoritmer*) are no longer copied into the record as LCSH.
+- **Search:** the source count no longer counts a source that failed (down, timed out, quota used) as answered.
+- **README:** installing from Koha's Plugins page through `<plugin_repos>`, which works when uploads are restricted (`plugins_restricted`, the default), and uploading the `.kpz` where allowed.
+
 ## 1.0.0 — 2026-11-18
 
 First public release. Everything below, tested on Koha 26.05.

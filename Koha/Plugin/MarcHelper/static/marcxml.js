@@ -180,9 +180,11 @@ function marcRecordToBook(record, source, options = {}) {
   const extent = sub(physical, 'a').replace(/\s*[:;+]\s*$/, '').replace(/\bS\.?$/, 'p.')
     .replace(/^(\d+)$/, '$1 p.');  // bare page count
 
-  // LCSH headings (650 _0) with subdivisions, in MARC subfield order
+  // LCSH headings (650 _0) with subdivisions, in MARC subfield order. Some catalogues code
+  // terms of their own language as LCSH ("algoritmer"): a heading whose first word has no
+  // capital letter is not LCSH ("iPhone (Smartphone)" is), so it is left out.
   const lcshHeadings = fieldsByTag('650')
-    .filter(f => f.ind2 === '0')
+    .filter(f => f.ind2 === '0' && !/^\p{Ll}[^\s\p{Lu}]*(\s|$)/u.test(sub(f, 'a').trim()))
     .map(f => f.subfields
       .filter(([code]) => 'axyzv'.includes(code))
       .map(([code, value]) => ({[code]: trimIsbd(value)})))

@@ -369,7 +369,8 @@ window.MarcHelper = (function () {
 
   function drawSources(states) {
     const list = Object.entries(states);
-    const answered = list.filter(([, s]) => s.state !== 'searching').length;
+    // A source that failed (down, timed out, quota used) has not answered
+    const answered = list.filter(([, s]) => s.state === 'found' || s.state === 'none').length;
     ui.sourcesHead.textContent = `Sources · ${answered} of ${list.length} answered`;
     ui.sources.textContent = '';
     list.forEach(([name, s]) => {

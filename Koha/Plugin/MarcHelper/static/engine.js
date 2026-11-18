@@ -447,7 +447,9 @@ async function lcshLookup(heading, scheme = 'subjects') {
   const url = `${LC_SUGGEST[scheme] || LC_SUGGEST.subjects}?${new URLSearchParams({q: heading, count: '20'})}`;
   const data = await fetchJsonCached(url, {}, 7 * 24 * 3600000);
   const hits = Array.isArray(data.hits) ? data.hits : [];
-  const authorised = hits.find(hit => sameHeading(hit.aLabel, heading) && !hit.vLabel);
+  // The heading itself, even when LC lists one of its see-from forms with it
+  // ("Computer programming" comes with vLabel "Electronic computer programming")
+  const authorised = hits.find(hit => sameHeading(hit.aLabel, heading));
   if (authorised) return {status: 'authorised', label: authorised.aLabel, uri: authorised.uri};
   const references = hits.filter(hit => hit.vLabel && sameHeading(hit.vLabel, heading));
   if (references.length) return {status: 'use', use: [...new Set(references.map(hit => hit.aLabel))]};

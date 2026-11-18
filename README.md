@@ -17,7 +17,7 @@ Copy cataloguing inside Koha: on the **Add MARC record** page, a *MARC Helper* b
 
 It is the Koha plugin form of the [Koha MARC Helper browser extension](https://chromewebstore.google.com/detail/hgiojehcfeaebkojkgpgiljdpncielcb) and shares its record-building code. Licence: **GNU GPL v3 or later** (see `LICENSE`).
 
-Plugin class `Koha::Plugin::MarcHelper`, version 1.0.0 (see `CHANGELOG.md`). Needs Koha 22.11 or later; tested on Koha 26.05.
+Plugin class `Koha::Plugin::MarcHelper`, version 1.0.1 (see `CHANGELOG.md`). Needs Koha 22.11 or later; tested on Koha 26.05.
 
 ## Highlights
 
@@ -52,14 +52,31 @@ Planned: "already in your library" from the Koha database, Z39.50.
 
 ## Install
 
-1. Plugins must be enabled in `koha-conf.xml`: `<enable_plugins>1</enable_plugins>` (then restart Plack: `sudo koha-plack --restart <instance>`).
-2. Download `koha-plugin-marchelper-v<version>.kpz` from the [**Releases** page](https://github.com/amalendu-ls/koha-plugin-marc-helper/releases).
-3. *Administration → Plugins → Upload plugin*, choose the `.kpz`.
-4. *Actions → Configure*: enter your institution name and item type; change the cataloguing rules if your library works differently; save.
-5. Open *Cataloguing → New record*: the **MARC Helper** button is in the toolbar. Batch cataloguing is under *Tools → Tool plugins → Koha MARC Helper → Run tool*.
-6. *Actions → Configure → About* shows a server check: whether keys are encrypted (Koha's `encryption_key`) and how many Plack workers this Koha runs (6 or more recommended, see [Plack workers](#plack-workers)). On *Sources*, *Test sources* shows that the Koha server can reach the book sources.
+Plugins must be enabled in `koha-conf.xml`: `<enable_plugins>1</enable_plugins>` (then restart Plack: `sudo koha-plack --restart <instance>`). Then use either way below.
 
-To upgrade, upload the new `.kpz` the same way; settings and keys are kept.
+**Option A – from Koha's Plugins page (works whether or not uploads are allowed; recommended).** Most Koha servers restrict uploads (`<plugins_restricted>1</plugins_restricted>` is the default in `koha-conf.xml`) and then install plugins only from the GitHub accounts listed in `<plugin_repos>`.
+
+1. In `koha-conf.xml`, add this inside `<plugin_repos>` (a packaged Koha has this block, with examples commented out), then restart Plack:
+
+   ```xml
+   <repo>
+       <name>Koha MARC Helper</name>
+       <org_name>amalendu-ls</org_name>
+       <service>github</service>
+   </repo>
+   ```
+
+2. *Administration → Plugins*: search for **MARC Helper** and click **Install** next to the latest version. Koha downloads the `.kpz` from this repository's Releases.
+
+**Option B – upload the file (when your Koha allows uploads).** Download `koha-plugin-marchelper-v<version>.kpz` from the [**Releases** page](https://github.com/amalendu-ls/koha-plugin-marc-helper/releases), then *Administration → Plugins → Upload plugin*. If Koha answers *"Plugin upload is restricted"*, use option A, or ask the server administrator to set `<plugins_restricted>0</plugins_restricted>` and restart Plack.
+
+Then, either way:
+
+1. *Actions → Configure*: enter your institution name and item type; change the cataloguing rules if your library works differently; save.
+2. Open *Cataloguing → New record*: the **MARC Helper** button is in the toolbar. Batch cataloguing is under *Tools → Tool plugins → Koha MARC Helper → Run tool*.
+3. *Actions → Configure → About* shows a server check: whether keys are encrypted (Koha's `encryption_key`) and how many Plack workers this Koha runs (6 or more recommended, see [Plack workers](#plack-workers)). On *Sources*, *Test sources* shows that the Koha server can reach the book sources.
+
+To upgrade: with option A, search on the Plugins page again and install the newer version; with option B, upload the new `.kpz`. Settings and keys are kept.
 
 ### Permissions
 
@@ -69,20 +86,6 @@ To upgrade, upload the new `.kpz` the same way; settings and keys are kept.
 | Open batch cataloguing | *plugins: tool* and *edit_catalogue* |
 | Stage batch records in Koha | *tools: stage_marc_import* (without it the records can still be downloaded) |
 | Change the settings | *plugins: configure* |
-
-### Finding the plugin from inside Koha
-
-Koha's *Plugins* page can search GitHub for plugins, but only the accounts listed in `koha-conf.xml`. To find this one there, add the account that holds this repository to `<plugin_repos>`:
-
-```xml
-<plugin_repos>
-    <repo>
-        <name>Koha MARC Helper</name>
-        <org_name>amalendu-ls</org_name>
-        <service>github</service>
-    </repo>
-</plugin_repos>
-```
 
 ## Privacy and data
 
